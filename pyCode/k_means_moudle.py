@@ -6,7 +6,7 @@ from sklearn.metrics import calinski_harabasz_score
 from sklearn.metrics import davies_bouldin_score
 
 def do_Kmeans(X,df_Location):
-    n_cluster = 2
+    n_cluster = 7
     random_state = 0
     cluster =  KMeans(n_clusters = n_cluster, n_init= "auto",random_state = random_state).fit(X)
     print(cluster)
@@ -41,7 +41,7 @@ def do_Kmeans(X,df_Location):
     print(df_cluster1)
     print(df_cluster2)
 
-    color = ["red","blue"]
+    color = ["red","blue","green","pink","orange","yellow","purple"]
     fig, ax1 = plt.subplots(1)
     tempCounter = 0
     for i in range(n_cluster):
@@ -56,6 +56,21 @@ def do_Kmeans(X,df_Location):
                 plt.text(x,y,label)
         if(i==1):
             for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==1, 0],X[pred==1, 1]):
+                plt.text(x,y,label)
+        if(i==2):
+            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==2, 0],X[pred==2, 1]):
+                plt.text(x,y,label)
+        if(i==3):
+            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==3, 0],X[pred==3, 1]):
+                plt.text(x,y,label)
+        if(i==4):
+            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==4, 0],X[pred==4, 1]):
+                plt.text(x,y,label)
+        if(i==5):
+            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==5, 0],X[pred==5, 1]):
+                plt.text(x,y,label)
+        if(i==5):
+            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==5, 0],X[pred==5, 1]):
                 plt.text(x,y,label)
     ax1.scatter(centroid[:,0],centroid[:,1]
         ,marker="x"
