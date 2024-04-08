@@ -51,26 +51,7 @@ def do_Kmeans(X,df_Location):
            ,s=8
            ,c=color[i]
            )
-        if(i==0):
-            for label,x,y in zip(df_cluster1.Scatter_Index,X[pred==0, 0],X[pred==0, 1]):
-                plt.text(x,y,label)
-        if(i==1):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==1, 0],X[pred==1, 1]):
-                plt.text(x,y,label)
-        if(i==2):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==2, 0],X[pred==2, 1]):
-                plt.text(x,y,label)
-        if(i==3):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==3, 0],X[pred==3, 1]):
-                plt.text(x,y,label)
-        if(i==4):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==4, 0],X[pred==4, 1]):
-                plt.text(x,y,label)
-        if(i==5):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==5, 0],X[pred==5, 1]):
-                plt.text(x,y,label)
-        if(i==5):
-            for label,x,y in zip(df_cluster2.Scatter_Index,X[pred==5, 0],X[pred==5, 1]):
+        for label,x,y in zip(df_cluster1.Scatter_Index,X[pred==i, 0],X[pred==i, 1]):
                 plt.text(x,y,label)
     ax1.scatter(centroid[:,0],centroid[:,1]
         ,marker="x"

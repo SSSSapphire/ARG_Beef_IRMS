@@ -69,7 +69,7 @@ df_PcaLabelLocation = pd.DataFrame(pca_Result)
 df_PcaLabelLocation.columns = ['scatter_X','scatter_Y']
 df_PcaLabelLocation['Scatter_Index'] = df_firstList['pointName']
 print(df_PcaLabelLocation)
-input("任意键继续")
+
 
 
 # tSNE降维
