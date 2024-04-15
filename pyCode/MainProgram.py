@@ -13,14 +13,15 @@ from sklearn.impute import SimpleImputer
 
 
 # 读csv
-xl_data = pd.read_csv('Data/beef_elements_0403.csv')
+xl_data = pd.read_csv('Data/beef_elements_0416.csv')
 
 # 读取csv文件存为df
-df = pd.read_csv('Data/beef_elements_0403.csv',index_col="Sample")
+df = pd.read_csv('Data/beef_elements_0416.csv',index_col="Sample")
 np.savetxt("Temp/transCSV.csv",df,'%.18e',delimiter=' ')
 print("原始数据:")
 display(df)
 
+'''
 # 插值填补
 print("中位数插值填补")
 imp_mid = SimpleImputer(missing_values=np.NaN,strategy='median')
@@ -28,15 +29,14 @@ df_Impute = imp_mid.fit_transform(df)
 display(df_Impute)
 print("df.shape", df.shape)
 np.savetxt("Temp/df_Impute.csv",df_Impute,'%.18e',delimiter=' ')
+'''
 
 # 提取Sample序列
 print("提取序列")
 firstList = xl_data['Sample']
 print(firstList)
 print(type(firstList))
-print("次序列")
-#for i in range(firstList.size):
-#    print(firstList[i])
+
 
 #print("平均差与标准差")
 #df_stats = df.describe().loc[['mean','std']]
@@ -45,22 +45,19 @@ print("次序列")
 
 # 归一化
 scaler = StandardScaler()
-df_Normal = scaler.fit_transform(df_Impute)
-print("归一化结果")
-display(df_Normal)
+df_Normal = scaler.fit_transform(df)
 np.savetxt("Temp/Normalization.csv",df_Normal,'%.18e',delimiter=' ')
 
+
 # PCA降维
-print("PCA降维结果")
 pca_Result = pca_moudle.do_Pca(df_Normal)
-display(pca_Result)
 plt.title("PCA_Result")
 plt.scatter(pca_Result[:, 0], pca_Result[:, 1])
 plt.axis('equal')
 for label,x,y in zip(firstList,pca_Result[:, 0],pca_Result[:, 1]):
     plt.text(x,y,label)
-plt.show()
-input("任意键继续")
+plt.show(block=False)
+
 
 
 # 组装pcaResult与firstList为DataFrame
@@ -74,7 +71,6 @@ print(df_PcaLabelLocation)
 
 # tSNE降维
 #print("tSNE降维结果")
-
 #tSNE_Result = tSNE_moudle.do_tSNE(df_Normal)
 
 print("Kmeans聚类")

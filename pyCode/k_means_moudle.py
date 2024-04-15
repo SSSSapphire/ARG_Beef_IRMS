@@ -8,7 +8,7 @@ from sklearn.metrics import davies_bouldin_score
 def do_Kmeans(X,df_Location):
     n_cluster = 7
     random_state = 0
-    cluster =  KMeans(n_clusters = n_cluster, n_init= "auto",random_state = random_state).fit(X)
+    cluster =  KMeans(n_clusters = n_cluster, init= 'k-means++', n_init= "auto",random_state = random_state).fit(X)
     print(cluster)
 
     #查看每个样本对应的类
@@ -34,12 +34,14 @@ def do_Kmeans(X,df_Location):
     print("戴维斯布尔丁指数davies_bouldin_score(越小越好) = " +        str(davies_bouldin_score(X,pred)))
 
     #预测结果分类标签名称
+    df_cluster = {}
     df_Pred = pd.DataFrame({'pred_index':pred})
     df_Location['pred_index'] = df_Pred['pred_index']
-    df_cluster1 = df_Location[df_Location.pred_index < 1]
-    df_cluster2 = df_Location[df_Location.pred_index > 0]
-    print(df_cluster1)
-    print(df_cluster2)
+    for i in range(n_cluster):
+        df_cluster[i] = df_Location[df_Location.pred_index == i]
+        print(df_cluster[i])
+    #df_cluster1 = df_Location[df_Location.pred_index < 1]
+    #df_cluster2 = df_Location[df_Location.pred_index > 0]
 
     color = ["red","blue","green","pink","orange","yellow","purple"]
     fig, ax1 = plt.subplots(1)
@@ -51,7 +53,7 @@ def do_Kmeans(X,df_Location):
            ,s=8
            ,c=color[i]
            )
-        for label,x,y in zip(df_cluster1.Scatter_Index,X[pred==i, 0],X[pred==i, 1]):
+        for label,x,y in zip(df_cluster[i].Scatter_Index,X[pred==i, 0],X[pred==i, 1]):
                 plt.text(x,y,label)
     ax1.scatter(centroid[:,0],centroid[:,1]
         ,marker="x"
