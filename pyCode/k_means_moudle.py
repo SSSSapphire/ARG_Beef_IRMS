@@ -6,7 +6,7 @@ from sklearn.metrics import calinski_harabasz_score
 from sklearn.metrics import davies_bouldin_score
 
 def do_Kmeans(X,df_Location):
-    n_cluster = 7
+    n_cluster = 14
     random_state = 0
     cluster =  KMeans(n_clusters = n_cluster, init= 'k-means++', n_init= "auto",random_state = random_state).fit(X)
     print(cluster)
@@ -43,7 +43,7 @@ def do_Kmeans(X,df_Location):
     #df_cluster1 = df_Location[df_Location.pred_index < 1]
     #df_cluster2 = df_Location[df_Location.pred_index > 0]
 
-    color = ["red","blue","green","pink","orange","yellow","purple"]
+    color = ["red","blue","green","pink","orange","yellow","purple","navy","gold","aqua","lightgreen","chocolate","brown","violet"]
     fig, ax1 = plt.subplots(1)
     tempCounter = 0
     for i in range(n_cluster):
