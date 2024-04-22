@@ -1,12 +1,14 @@
-import array as arr
-from operator import index
+import csv
 import pandas as pd
-import pca_moudle
-import tSNE_moudle
+import array as arr
 import k_means_moudle
+import tSNE_moudle
+import Main_Controller
 import kmeans_constrained_moudle
 import numpy as np
 import matplotlib.pyplot as plt
+from operator import index
+from tarfile import PAX_NAME_FIELDS
 from IPython.display import display
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer    
@@ -49,7 +51,12 @@ df_Normal = scaler.fit_transform(df)
 np.savetxt("Temp/Normalization.csv",df_Normal,'%.18e',delimiter=' ')
 
 
-# PCA降维
+#降维
+action_number = int(input("请输入数字选择降维方式：1.PCA降维 2.t-SNE降维"))
+dimensionData = Main_Controller.dimension_Action(action_number, df_Normal, firstList)
+
+
+'''
 pca_Result = pca_moudle.do_Pca(df_Normal)
 plt.title("PCA_Result")
 plt.scatter(pca_Result[:, 0], pca_Result[:, 1])
@@ -57,26 +64,28 @@ plt.axis('equal')
 for label,x,y in zip(firstList,pca_Result[:, 0],pca_Result[:, 1]):
     plt.text(x,y,label)
 plt.show(block=False)
-
+'''
 
 
 # 组装pcaResult与firstList为DataFrame
 df_firstList = pd.DataFrame({'pointName':firstList.values})
-df_PcaLabelLocation = pd.DataFrame(pca_Result)
+df_PcaLabelLocation = pd.DataFrame(dimensionData)
 df_PcaLabelLocation.columns = ['scatter_X','scatter_Y']
 df_PcaLabelLocation['Scatter_Index'] = df_firstList['pointName']
 print(df_PcaLabelLocation)
 
 
 
-# tSNE降维
-#print("tSNE降维结果")
+#tSNE降维
+#print("tSNE降维")
 #tSNE_Result = tSNE_moudle.do_tSNE(df_Normal)
 
 print("Kmeans聚类")
-Kmeans_PCA = k_means_moudle.do_Kmeans(pca_Result,df_PcaLabelLocation)
+k_means_moudle.do_Kmeans(dimensionData,df_PcaLabelLocation)
 #Kmeans_tSNE = k_means_moudle.do_Kmeans(tSNE_Result,firstList)
 
 
 #print("KmeansConstrained聚类")
 #Kmeans_constrained = kmeans_constrained_moudle.doKmeansConstrained(pca_Result,firstList)
+
+
