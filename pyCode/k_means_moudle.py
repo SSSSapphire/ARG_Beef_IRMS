@@ -47,7 +47,7 @@ def do_Kmeans(X,df_Location):
     fig, ax1 = plt.subplots(1)
     tempCounter = 0
     for i in range(n_cluster):
-        print("xxxxxxxxxxxxxxxxxxx", n_cluster,i,pre)
+        #print("xxxxxxxxxxxxxxxxxxx", n_cluster,i,pre)
         ax1.scatter(X[pred==i, 0], X[pred==i, 1]
            ,marker='o'
            ,s=8
