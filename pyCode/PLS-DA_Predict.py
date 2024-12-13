@@ -43,11 +43,11 @@ def plot_2d_clusters(X, y, names, plsda, scaler, encoder):
     # 绘制散点图，使用类别数值作为颜色映射
     plt.figure(figsize=(10, 7))
     scatter = plt.scatter(X_pls[:, 0], X_pls[:, 1], c=y_encoded, cmap='coolwarm', edgecolor='k', s=100)
-
-    # 标记样品名称
+    '''
+    # 标记样品名称 
     for i, name in enumerate(names):
         plt.text(X_pls[i, 0], X_pls[i, 1], name, fontsize=9)
-
+    '''
     # 计算95%置信区间并绘制
     mean = np.mean(X_pls, axis=0)
     
@@ -122,8 +122,8 @@ def predict_unknown_samples(unknown_csv, plsda, scaler, encoder):
 # 示例执行
 if __name__ == "__main__":
     # 训练集的CSV文件路径
-    training_file = 'C:\\Users\\amd9600\\Desktop\\beef_sci01\\origin_data_country_modify.csv'  # 这里修改为你自己的训练数据路径
-    unknown_file = 'C:\\Users\\amd9600\\Desktop\\beef_sci01\\unknown_samples.csv'  # 这里修改为你自己的未知样品数据路径
+    training_file = "Sci01_Data_1029.csv"  # 这里修改为你自己的训练数据路径
+    unknown_file = "unknown_samples.csv"  # 这里修改为你自己的未知样品数据路径
 
     # 加载训练数据
     X, y, names = load_data(training_file)
