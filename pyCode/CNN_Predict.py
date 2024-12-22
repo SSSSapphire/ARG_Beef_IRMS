@@ -69,6 +69,49 @@ def plot_2d_tsne(data, labels, names):
     plt.ylabel("Component 2")
     plt.grid()
     plt.show()
+    
+def plot_3d_pca(data, labels, names):
+    tsne = TSNE(n_components=3, random_state=42)
+    pca = PCA(n_components=3)
+    data_3d = pca.fit_transform(data)
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    unique_labels = np.unique(labels)
+    
+    for label in unique_labels:
+        indices = labels == label
+        if label == 1:
+            label_name = "CHN"
+        else:
+            label_name = "ARG"
+        ax.scatter(
+            data_3d[indices, 0], 
+            data_3d[indices, 1], 
+            data_3d[indices, 2], 
+            label=f'Class {label_name}', 
+            alpha=0.8
+        )
+    # 添加样本名称
+    '''
+    for i, name in enumerate(names):
+        ax.text(
+            data_3d[i, 0], 
+            data_3d[i, 1], 
+            data_3d[i, 2], 
+            name, 
+            fontsize=8
+        )
+    '''
+    # 设置标题和坐标轴标签
+    ax.set_title("3D PCA Projection")
+    ax.set_xlabel("Principal Component 1")
+    ax.set_ylabel("Principal Component 2")
+    ax.set_zlabel("Principal Component 3")
+    
+    # 添加图例和网格
+    ax.legend()
+    plt.grid()
+    plt.show()
 
 # 预测未知样品
 def predict_unknown_samples(model, scaler, label_encoder, file_path):
@@ -90,8 +133,8 @@ def predict_unknown_samples(model, scaler, label_encoder, file_path):
 # 主程序
 if __name__ == "__main__":
     # 配置文件路径
-    file_path = "Sci01_Data_1029.csv"  # 样品数据
-    unknown_file_path = "unknown_samples.csv"  # 未知样品数据
+    file_path = "Sci01_Data_CNN_Train.csv"  # 样品数据
+    unknown_file_path = "Sci01_Data_CNN_Test.csv"  # 未知样品数据
     output_file = "predicted_results.csv"  # 预测结果保存路径
 
     # 加载和预处理数据
@@ -123,7 +166,7 @@ if __name__ == "__main__":
 
     # 二维降维并绘图
     plot_2d_tsne(data_scaled, label_encoder.transform(labels), names)
-
+    plot_3d_pca(data_scaled, label_encoder.transform(labels), names)
     # 预测未知样品
     results = predict_unknown_samples(cnn_model, scaler, label_encoder, unknown_file_path)
     results.to_csv(output_file, index=False)
