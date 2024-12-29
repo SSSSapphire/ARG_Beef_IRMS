@@ -5,6 +5,8 @@ from sklearn.decomposition import PCA
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, r2_score
+from sklearn.model_selection import cross_val_score
 from matplotlib.patches import Ellipse
 
 # Step 1: 读取数据并准备训练集
@@ -43,11 +45,7 @@ def plot_2d_clusters(X, y, names, plsda, scaler, encoder):
     # 绘制散点图，使用类别数值作为颜色映射
     plt.figure(figsize=(10, 7))
     scatter = plt.scatter(X_pls[:, 0], X_pls[:, 1], c=y_encoded, cmap='coolwarm', edgecolor='k', s=100)
-    '''
-    # 标记样品名称 
-    for i, name in enumerate(names):
-        plt.text(X_pls[i, 0], X_pls[i, 1], name, fontsize=9)
-    '''
+
     # 计算95%置信区间并绘制
     mean = np.mean(X_pls, axis=0)
     
@@ -83,7 +81,6 @@ def plot_2d_clusters(X, y, names, plsda, scaler, encoder):
     plt.xlabel('PLS1')
     plt.ylabel('PLS2')
     plt.legend()
-    #plt.colorbar(scatter, label='Class')  # 添加颜色条，用于显示类别映射
     plt.show()
 
 # Step 4: 输入未知样品并进行预测
@@ -117,7 +114,61 @@ def predict_unknown_samples(unknown_csv, plsda, scaler, encoder):
             print(f"  Class: {label}, Probability: {probabilities[i, j]:.2f}")
         print()
 
+# Step 5: 计算VIP值
+def calculate_vip(plsda, X_train):
+    X_scaled = StandardScaler().fit_transform(X_train)  # 标准化数据
+    T = plsda.x_scores_  # 得分矩阵
+    W = plsda.x_weights_  # 权重矩阵
+    Q = plsda.y_loadings_  # y加载矩阵
+    
+    # 计算VIP值
+    VIP = np.sqrt(X_scaled.shape[1] * np.sum((W ** 2) * np.sum(T ** 2, axis=0) / np.sum(T ** 2), axis=1))
+    
+    return VIP
 
+# Step 6: PLS-DA 模型评估
+def evaluate_plsda(plsda, X_train, y_train):
+    # 将 y_train 转换为数值标签
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y_train)
+
+    # PLS-DA 模型预测（回归得分）
+    y_pred = plsda.predict(X_train)  # 使用模型进行预测
+
+    # 对于二分类任务，假设 y_pred[:, 0] 是类别1的概率，y_pred[:, 1] 是类别2的概率
+    # 你可以将回归得分转化为类别
+    if y_pred.ndim == 1:  # 如果是单维（回归任务）
+        y_pred_labels = (y_pred > 0).astype(int)  # 二分类：使用 0 作为阈值
+    else:  # 如果是多维（分类任务）
+        y_pred_labels = np.argmax(y_pred, axis=1)  # 获取预测的类别标签
+
+    # 计算 Accuracy
+    accuracy = accuracy_score(y_encoded, y_pred_labels)
+    print(f"Accuracy: {accuracy:.4f}")
+
+    # 计算 R²
+    r2 = r2_score(y_encoded, y_pred_labels)  # 计算 R²
+    print(f"R²: {r2:.4f}")
+
+    # 计算 Q²（交叉验证）
+    q2_scores = cross_val_score(plsda, X_train, y_encoded, cv=10, scoring='neg_mean_squared_error')
+    q2 = np.mean(q2_scores)
+    print(f"Q2 Score: {q2:.4f}")
+
+# Step 7: 可视化VIP值
+def plot_vip(VIP, feature_names):
+    vip_df = pd.DataFrame({'Feature': feature_names, 'VIP': VIP})
+    vip_df = vip_df.sort_values(by='VIP', ascending=False)
+    
+    # 绘制柱形图
+    plt.figure(figsize=(12, 6))
+    plt.bar(vip_df['Feature'], vip_df['VIP'], color='steelblue')
+    plt.xlabel('Feature')
+    plt.ylabel('VIP Score')
+    plt.title('VIP Scores of Features')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.show()
 
 # 示例执行
 if __name__ == "__main__":
@@ -137,6 +188,18 @@ if __name__ == "__main__":
     
     # 可视化二维聚类图
     plot_2d_clusters(X, y, names, plsda, scaler, encoder)
+    
+    # 计算并显示VIP值
+    VIP = calculate_vip(plsda, X_train)
+    
+    # 假设特征名称是特征列的索引（可以根据你的数据调整）
+    feature_names = [f"Feature {i+1}" for i in range(X_train.shape[1])]
+    
+    # 可视化VIP值
+    plot_vip(VIP, feature_names)
+    
+    # PLS-DA 模型评估
+    evaluate_plsda(plsda, X_train, y_train)
     
     # 输入未知样品并进行分类预测
     predict_unknown_samples(unknown_file, plsda, scaler, encoder)
